@@ -57,5 +57,18 @@ namespace Infrastructure.Repositories
             context.Voyages.Update(voyage);
             return context.SaveChangesAsync();
         }
+
+        //public async Task<List<string>> GetVisitedCountriesLastYearAsync()
+        //{
+        //    var oneYearAgo = DateTime.UtcNow.AddYears(-1);
+
+        //    return await context.Voyages
+        //        .Where(v => v.End >= oneYearAgo)
+        //        .Include(v => v.ArrivalPort)
+        //        .Select(v => v.ArrivalPort!.Country)
+        //        .Distinct()
+        //        .ToListAsync();
+        //}
+
     }
 }

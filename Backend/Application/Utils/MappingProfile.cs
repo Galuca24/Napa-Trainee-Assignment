@@ -4,6 +4,7 @@ using Application.Features.Port.Commands.UpdatePort;
 using Application.Features.Ship.Commands.CreateShip;
 using Application.Features.Ship.Commands.UpdateShip;
 using Application.Features.Voyage.Commands.CreateVoyage;
+using Application.Features.Voyage.Commands.UpdateVoyage;
 using AutoMapper;
 using Domain.Entities;
 
@@ -23,6 +24,7 @@ namespace Application.Utils
 
             CreateMap<Voyage, VoyageDTO>().ReverseMap();
             CreateMap<CreateVoyageCommand, Voyage>().ReverseMap();
+            CreateMap<UpdateVoyageCommand, Voyage>().ReverseMap();
         }
     }
 }
