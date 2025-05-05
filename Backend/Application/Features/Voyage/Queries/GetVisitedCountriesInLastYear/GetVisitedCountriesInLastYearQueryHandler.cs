@@ -27,14 +27,13 @@ namespace Application.Features.Voyage.Queries.GetVisitedCountriesInLastYear
             return await _context.Voyages
                 .Where(v => v.End >= oneYearAgo && v.End <= DateTime.UtcNow)
                 .Include(v => v.ArrivalPort)
-                .Select(v => new VisitedCountryDTO
+                .GroupBy(v => v.ArrivalPort!.Country)
+                .Select(g => new VisitedCountryDTO
                 {
-                    Country = v.ArrivalPort!.Country,
-                    ShipId = v.ShipId,
-                    VoyageId = v.Id,
-                    Start = v.Start,
-                    End = v.End
+                    Country = g.Key,
+                    Count = g.Count()
                 })
+                .OrderByDescending(x => x.Count)
                 .ToListAsync(cancellationToken);
         }
     }

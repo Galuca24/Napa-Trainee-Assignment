@@ -63,12 +63,7 @@ namespace ShipManagement.Controllers
 
         }
 
-        [HttpGet("visited-countries-detailed-last-year")]
-        public async Task<ActionResult<List<VisitedCountryDTO>>> GetVisitedCountriesDetailed()
-        {
-            var result = await mediator.Send(new GetVisitedCountriesQuery());
-            return Ok(result);
-        }
+       
 
 
     }

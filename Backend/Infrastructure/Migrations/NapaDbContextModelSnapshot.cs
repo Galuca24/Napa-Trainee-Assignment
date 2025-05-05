@@ -22,37 +22,21 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.Country", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Country");
-                });
-
             modelBuilder.Entity("Domain.Entities.Port", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CountryId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
 
                     b.ToTable("Ports");
                 });
@@ -110,17 +94,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Voyages");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Port", b =>
-                {
-                    b.HasOne("Domain.Entities.Country", "Country")
-                        .WithMany("Ports")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Country");
-                });
-
             modelBuilder.Entity("Domain.Entities.Voyage", b =>
                 {
                     b.HasOne("Domain.Entities.Port", "ArrivalPort")
@@ -138,7 +111,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Ship", "Ship")
                         .WithMany("Voyages")
                         .HasForeignKey("ShipId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ArrivalPort");
@@ -146,11 +119,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("DeparturePort");
 
                     b.Navigation("Ship");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Country", b =>
-                {
-                    b.Navigation("Ports");
                 });
 
             modelBuilder.Entity("Domain.Entities.Port", b =>

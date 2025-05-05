@@ -58,17 +58,18 @@ namespace Infrastructure.Repositories
             return context.SaveChangesAsync();
         }
 
-        //public async Task<List<string>> GetVisitedCountriesLastYearAsync()
-        //{
-        //    var oneYearAgo = DateTime.UtcNow.AddYears(-1);
+        public async Task<bool> IsShipOccupied(Guid shipId, DateTime start, DateTime end)
+        {
+            return await context.Voyages.AnyAsync(v =>
+                v.ShipId == shipId &&
+                (
+                    (start >= v.Start && start <= v.End) || 
+                    (end >= v.Start && end <= v.End) ||     
+                    (start <= v.Start && end >= v.End)      
+                )
+            );
+        }
 
-        //    return await context.Voyages
-        //        .Where(v => v.End >= oneYearAgo)
-        //        .Include(v => v.ArrivalPort)
-        //        .Select(v => v.ArrivalPort!.Country)
-        //        .Distinct()
-        //        .ToListAsync();
-        //}
 
     }
 }

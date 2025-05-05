@@ -1,4 +1,63 @@
-/* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+
+/* Poziționare în colțul din STÂNGA JOS */
+.toast-bottom-left {
+  bottom: 1rem;
+  left: 1rem;
+  position: fixed;
+  z-index: 1060;
+}
+
+/* Toast de succes */
+.toast-success {
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important;
+  border-left: 5px solid #198754;
+  animation: slideInLeft 0.4s ease forwards;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+}
+
+/* Toast de eroare */
+.toast-error {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+  border-left: 5px solid #dc3545;
+  animation: slideInLeft 0.4s ease forwards;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+}
+
+/* Slide in from left */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+

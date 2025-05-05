@@ -1,1 +1,41 @@
-<p>statistics works!</p>
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Statistics</h2>
+
+  <div class="d-flex gap-3 flex-wrap justify-content-center mb-4">
+
+    <div>
+      <select class="form-select text-muted"
+              [(ngModel)]="selectedCategory"
+              (change)="onCategoryChange()">
+        <option value="" disabled selected hidden>Choose Category</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="selectedCategory">
+      <select class="form-select text-muted"
+              [(ngModel)]="selectedStatistic">
+        <option value="" disabled selected hidden>Choose Statistic</option>
+        <option *ngFor="let stat of statisticsOptions[selectedCategory]" [value]="stat">{{ stat }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="selectedStatistic">
+      <select class="form-select text-muted"
+              [(ngModel)]="selectedChartType">
+        <option value="" disabled selected hidden>Chart Type</option>
+        <option *ngFor="let type of chartTypes" [value]="type">{{ type }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="selectedStatistic && selectedChartType">
+      <button class="btn btn-primary" (click)="generateChart()">Generate</button>
+    </div>
+  </div>
+
+  <div *ngIf="showChart" class="d-flex justify-content-center">
+    <div class="border rounded p-3 shadow-sm bg-light" style="width: 400px  ; max-width: 100%;">
+      <canvas id="chartCanvas" style="max-width: 100%; height: auto;"></canvas>
+    </div>
+  </div>
+

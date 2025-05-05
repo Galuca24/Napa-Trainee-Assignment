@@ -1,0 +1,52 @@
+<div class="modal show d-block" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Voyage</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="departurePortId" class="form-label">Departure Port</label>
+            <select id="departurePortId" class="form-select" formControlName="departurePortId">
+              <option *ngFor="let port of ports" [value]="port.id">{{ port.name }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="arrivalPortId" class="form-label">Arrival Port</label>
+            <select id="arrivalPortId" class="form-select" formControlName="arrivalPortId">
+              <option *ngFor="let port of ports" [value]="port.id">{{ port.name }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="shipId" class="form-label">Ship</label>
+            <select id="shipId" class="form-select" formControlName="shipId">
+              <option *ngFor="let ship of ships" [value]="ship.id">{{ ship.name }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="start" class="form-label">Start Date</label>
+            <mat-form-field appearance="fill" class="w-100">
+              <input matInput [matDatepicker]="startPicker" id="start" formControlName="start">
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="mb-3">
+            <label for="end" class="form-label">End Date</label>
+            <mat-form-field appearance="fill" class="w-100">
+              <input matInput [matDatepicker]="endPicker" id="end" formControlName="end">
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cancel()">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -31,6 +31,11 @@ namespace Infrastructure.Persistence
                 .HasForeignKey(v => v.DeparturePortId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Voyage>().HasOne(v => v.Ship)
+                .WithMany(s => s.Voyages)
+                .HasForeignKey(v => v.ShipId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Voyage>()
                 .HasOne(v => v.ArrivalPort)
                 .WithMany(p => p.ArrivalVoyages)

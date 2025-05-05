@@ -7,6 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { ShipService } from '../../services/ship.service';
 import { Ship } from '../../../models/ship.model';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ShipEditComponent } from '../ship-edit/ship-edit.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-ship-list',
@@ -24,7 +27,7 @@ export class ShipListComponent implements OnInit {
   ships: Ship[] = [];
   displayedColumns: string[] = ['name', 'maxSpeed', 'actions'];
 
-  constructor(private shipService: ShipService, private router: Router) {}
+  constructor(private dialog: MatDialog,private shipService: ShipService, private router: Router, private toastr: ToastrService  ) {}
 
   ngOnInit(): void {
     this.loadShips();
@@ -37,12 +40,68 @@ export class ShipListComponent implements OnInit {
   }
 
   deleteShip(id: string): void {
-    this.shipService.deleteShip(id).subscribe(() => {
-      this.loadShips();
+    this.shipService.deleteShip(id).subscribe({
+      next: () => {
+        this.toastr.success('Ship deleted successfully!');
+        this.loadShips();
+      },
+      error: err => {
+        if (err.status === 500) {
+          this.toastr.error('Ship cannot be deleted because it is assigned to a voyage.');
+        } else {
+          this.toastr.error('Failed to delete port.');
+        }
+      }
     });
   }
 
+
   editShip(ship: Ship): void {
-    console.log('Edit ship:', ship);
+    const dialogRef = this.dialog.open(ShipEditComponent, {
+      width: '400px',
+      data: ship
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const updatedShip: Ship = { ...ship, ...result };
+        this.shipService.updateShip(ship.id, updatedShip).subscribe({
+          next: () => {
+            this.toastr.success('Ship updated successfully!');
+            this.loadShips();
+          },
+          error: err => {
+            this.toastr.error('Failed to update ship!');
+          }
+        });
+      }
+    });
   }
+
+addShip(): void {
+  const dialogRef = this.dialog.open(ShipEditComponent, {
+    width: '400px',
+    data: { name: '', maxSpeed: null }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.shipService.createShip(result).subscribe({
+        next: () => {
+          this.toastr.success('Ship created successfully!');
+          this.loadShips();
+        },
+        error: err => {
+          this.toastr.error('Failed to create ship ');
+        }
+      });
+    }
+  });
+}
+
+
+
+  viewShipDetails(id: string): void {
+    this.router.navigate(['/ships', id]);
+}
 }

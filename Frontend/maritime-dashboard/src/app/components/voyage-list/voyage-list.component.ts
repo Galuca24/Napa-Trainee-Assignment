@@ -11,10 +11,24 @@ import { lastValueFrom } from 'rxjs';
 import { PortService } from '../../services/port.service';
 import { Port } from '../../../models/port.model';
 import { Ship } from '../../../models/ship.model';
+import { VoyageEditComponent } from '../voyage-edit/voyage-edit.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatNativeDateModule } from '@angular/material/core';
+import { EnvironmentInjector } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-voyage-list',
-  imports: [CommonModule,MatTableModule,MatIconModule,MatButtonModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatNativeDateModule
+  ],
   templateUrl: './voyage-list.component.html',
   styleUrl: './voyage-list.component.css'
 })
@@ -24,9 +38,12 @@ export class VoyageListComponent implements OnInit {
 
 
 constructor(
+  private dialog: MatDialog,
   private voyageService: VoyageService,
   private portService: PortService,
-  private shipService: ShipService
+  private shipService: ShipService,
+  private environmentInjector: EnvironmentInjector,
+  private toastr: ToastrService
 ) {}
 
 ngOnInit(): void {
@@ -51,14 +68,93 @@ loadVoyages(): void {
 }
 
 
-  deleteVoyage(id: string): void {
-    this.voyageService.deleteVoyage(id).subscribe(() => {
+deleteVoyage(id: string): void {
+  this.voyageService.deleteVoyage(id).subscribe({
+    next: () => {
+      this.toastr.success('Voyage deleted successfully!');
       this.loadVoyages();
+    },
+    error: err => {
+      if (err.status === 500) {
+        this.toastr.error('Voyage cannot be deleted due to a server-side error.');
+      } else {
+        this.toastr.error('Failed to delete voyage.');
+      }
+    }
+  });
+}
+
+
+  editVoyage(voyage: VoyageViewModel): void {
+    Promise.all([
+      lastValueFrom(this.portService.getPorts()),
+      lastValueFrom(this.shipService.getShips()),
+      lastValueFrom(this.voyageService.getVoyageById(voyage.id))
+    ]).then(([ports, ships, fullVoyage]) => {
+      const dialogRef = this.dialog.open(VoyageEditComponent, {
+        width: '500px',
+        data: {
+          voyage: fullVoyage,
+          ports,
+          ships
+        },
+        injector: this.environmentInjector
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.voyageService.updateVoyage(result.id, result).subscribe({
+            next: () => {
+              this.toastr.success('Voyage updated successfully!');
+              this.loadVoyages();
+            },
+            error: () => {
+              this.toastr.error('Failed to update voyage.');
+            }
+          });
+
+        }
+      });
+    }).catch(error => {
+      console.error('Error loading data for edit dialog:', error);
     });
   }
 
-  editVoyage(voyage: any): void {
-    console.log('Edit voyage:', voyage);
+
+  addVoyage(): void {
+    Promise.all([
+      lastValueFrom(this.portService.getPorts()),
+      lastValueFrom(this.shipService.getShips())
+    ]).then(([ports, ships]) => {
+      const dialogRef = this.dialog.open(VoyageEditComponent, {
+        width: '500px',
+        data: {
+          voyage: {} as Voyage,
+          ports,
+          ships
+        },
+        injector: this.environmentInjector
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.voyageService.createVoyage(result).subscribe({
+            next: () => {
+              this.toastr.success('Voyage created successfully!');
+              this.loadVoyages();
+            },
+            error: () => {
+              this.toastr.error('Failed to create voyage.');
+            }
+          });
+
+        }
+      });
+    }).catch(error => {
+      console.error('Error loading data for add dialog:', error);
+    });
   }
+
+
 
 }

@@ -15,6 +15,8 @@ namespace Domain.Repositories
         Task<Result<Guid>> AddAsync(Voyage voyage);
         Task UpdateAsync(Voyage voyage);
         Task DeleteAsync(Guid id);
+        Task<bool> IsShipOccupied(Guid shipId, DateTime start, DateTime end);
+
 
     }
 }
