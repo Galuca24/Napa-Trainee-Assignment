@@ -1,4 +1,4 @@
-<table mat-table [dataSource]="voyages" class="mat-elevation-z8" style="width: 100%; margin-top: 20px;">
+<table mat-table [dataSource]="paginatedVoyages" class="mat-elevation-z8" style="width: 100%; margin-top: 20px;">
 
   <ng-container matColumnDef="voyageDate">
     <th mat-header-cell *matHeaderCellDef>Voyage Date</th>
@@ -48,6 +48,14 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+
+<div class="pagination">
+  <button *ngFor="let page of [].constructor(totalPages); let i = index"
+          [class.active]="currentPage === i + 1"
+          (click)="goToPage(i + 1)">
+    {{ i + 1 }}
+  </button>
+</div>
 
 <button class="btn btn-primary fab" (click)="addVoyage()">
   <i class="bi bi-plus"></i>

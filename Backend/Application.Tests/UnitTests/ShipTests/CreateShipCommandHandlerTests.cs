@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.Tests.UnitTests.ShipTests
 {
-    public class CreateCommandHandlerTests
+    public class CreateShipCommandHandlerTests
     {
 
         private readonly IShipRepository repository;
@@ -20,7 +20,7 @@ namespace Application.Tests.UnitTests.ShipTests
         private readonly IMapper mapper;
 
 
-        public CreateCommandHandlerTests()
+        public CreateShipCommandHandlerTests()
         {
             repository = Substitute.For<IShipRepository>();
             mapper = Substitute.For<IMapper>();

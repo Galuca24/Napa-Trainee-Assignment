@@ -26,8 +26,12 @@ import { ToastrService } from 'ngx-toastr';
 export class ShipListComponent implements OnInit {
   ships: Ship[] = [];
   displayedColumns: string[] = ['name', 'maxSpeed', 'actions'];
+  paginatedShips: Ship[] = [];
+  pageSize: number = 5;
+  currentPage: number = 1;
+  totalPages: number = 0;
 
-  constructor(private dialog: MatDialog,private shipService: ShipService, private router: Router, private toastr: ToastrService  ) {}
+  constructor(private dialog: MatDialog, private shipService: ShipService, private router: Router, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.loadShips();
@@ -36,7 +40,22 @@ export class ShipListComponent implements OnInit {
   loadShips(): void {
     this.shipService.getShips().subscribe(data => {
       this.ships = data;
+      this.totalPages = Math.ceil(this.ships.length / this.pageSize);
+      this.updatePaginatedShips();
     });
+  }
+
+  updatePaginatedShips(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedShips = this.ships.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedShips();
+    }
   }
 
   deleteShip(id: string): void {
@@ -54,7 +73,6 @@ export class ShipListComponent implements OnInit {
       }
     });
   }
-
 
   editShip(ship: Ship): void {
     const dialogRef = this.dialog.open(ShipEditComponent, {
@@ -78,30 +96,28 @@ export class ShipListComponent implements OnInit {
     });
   }
 
-addShip(): void {
-  const dialogRef = this.dialog.open(ShipEditComponent, {
-    width: '400px',
-    data: { name: '', maxSpeed: null }
-  });
+  addShip(): void {
+    const dialogRef = this.dialog.open(ShipEditComponent, {
+      width: '400px',
+      data: { name: '', maxSpeed: null }
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      this.shipService.createShip(result).subscribe({
-        next: () => {
-          this.toastr.success('Ship created successfully!');
-          this.loadShips();
-        },
-        error: err => {
-          this.toastr.error('Failed to create ship ');
-        }
-      });
-    }
-  });
-}
-
-
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.shipService.createShip(result).subscribe({
+          next: () => {
+            this.toastr.success('Ship created successfully!');
+            this.loadShips();
+          },
+          error: err => {
+            this.toastr.error('Failed to create ship ');
+          }
+        });
+      }
+    });
+  }
 
   viewShipDetails(id: string): void {
     this.router.navigate(['/ships', id]);
-}
+  }
 }

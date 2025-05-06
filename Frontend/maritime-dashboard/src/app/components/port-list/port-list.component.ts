@@ -24,9 +24,12 @@ import { ToastrService } from 'ngx-toastr';
 export class PortListComponent implements OnInit {
   ports: Port[] = [];
   displayedColumns: string[] = ['name', 'location', 'actions'];
+  paginatedPorts: Port[] = [];
+  pageSize: number = 5;
+  currentPage: number = 1;
+  totalPages: number = 0;
 
-  constructor(private dialog: MatDialog,private portService: PortService, private router: Router,  private toastr: ToastrService
-  ) {}
+  constructor(private dialog: MatDialog, private portService: PortService, private router: Router, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.loadPorts();
@@ -35,7 +38,22 @@ export class PortListComponent implements OnInit {
   loadPorts(): void {
     this.portService.getPorts().subscribe(data => {
       this.ports = data;
+      this.totalPages = Math.ceil(this.ports.length / this.pageSize);
+      this.updatePaginatedPorts();
     });
+  }
+
+  updatePaginatedPorts(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedPorts = this.ports.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedPorts();
+    }
   }
 
   deletePort(id: string): void {
@@ -53,8 +71,6 @@ export class PortListComponent implements OnInit {
       }
     });
   }
-
-
 
   editPort(port: Port): void {
     const dialogRef = this.dialog.open(PortEditComponent, {
@@ -78,29 +94,27 @@ export class PortListComponent implements OnInit {
     });
   }
 
+  addPort(): void {
+    const dialogRef = this.dialog.open(PortEditComponent, {
+      width: '400px',
+      data: {
+        name: '',
+        location: ''
+      }
+    });
 
-
-addPort(): void {
-  const dialogRef = this.dialog.open(PortEditComponent, {
-    width: '400px',
-    data: {
-      name: '',
-      location: ''
-    }
-  });
-
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      this.portService.createPort(result).subscribe({
-        next: () => {
-          this.toastr.success('Port created successfully!');
-          this.loadPorts();
-        },
-        error: err => {
-          this.toastr.error('Failed to create port.');
-        }
-      });
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.portService.createPort(result).subscribe({
+          next: () => {
+            this.toastr.success('Port created successfully!');
+            this.loadPorts();
+          },
+          error: err => {
+            this.toastr.error('Failed to create port.');
+          }
+        });
+      }
+    });
+  }
 }
